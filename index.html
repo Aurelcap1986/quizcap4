@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    const question = 'Qui va rapporter des croissants lundi pro';
+    const options = ['Aurel', 'Camille', 'Thomas'];
+    const bonneReponse = 'Aurel';
+    const app = document.getElementById('app');
+    let selection = null;
+
+    function afficherQuestion() {
+      const cases = options.map((option) => {
+        const classes = option === selection
+          ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-600'
+          : 'border-slate-300 hover:bg-slate-50';
+        return `
+          <button data-option="${option}"
+            class="w-full text-left border rounded-xl p-3 ${classes}">
+            ${option}
+          </button>`;
+      }).join('');
+
+      app.innerHTML = `
+        <div class="min-h-screen flex items-center justify-center bg-slate-100 p-6">
+          <div class="bg-white rounded-3xl shadow-xl p-8 w-full max-w-xl">
+            <h1 class="text-3xl font-bold mb-4">Question</h1>
+            <p class="mb-4">${question}</p>
+            <div class="space-y-3">${cases}</div>
+            <button id="valider" ${selection === null ? 'disabled' : ''}
+              class="w-full mt-4 bg-blue-600 text-white p-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed">
+              Valider
+            </button>
+          </div>
+        </div>`;
+
+      app.querySelectorAll('[data-option]').forEach((bouton) => {
+        bouton.addEventListener('click', () => {
+          selection = bouton.dataset.option;
+          afficherQuestion();
+        });
+      });
+      document.getElementById('valider').addEventListener('click', verifier);
+    }
+
+    function verifier() {
+      if (selection === bonneReponse) {
+        afficherIndice();
+      } else {
+        afficherEchec();
+      }
+    }
+
+    function afficherIndice() {
+      app.innerHTML = `
+        <div class="min-h-screen flex items-center justify-center bg-green-50 p-6">
+          <div class="bg-white rounded-3xl shadow-xl p-8 max-w-xl text-center">
+            <h1 class="text-3xl font-bold text-green-700 mb-4">✅ Bonne réponse !</h1>
+            <p class="text-lg">Voici votre indice :</p>
+            <p class="mt-4 text-2xl font-semibold">super</p>
+          </div>
+        </div>`;
+    }
+
+    function afficherEchec() {
+      app.innerHTML = `
+        <div class="min-h-screen flex items-center justify-center bg-red-50 p-6">
+          <div class="bg-white rounded-3xl shadow-xl p-8 max-w-xl text-center">
+            <h1 class="text-3xl font-bold text-red-700 mb-4">❌ Échec</h1>
+            <p class="text-lg">Mauvaise réponse. Vous n'avez pas trouvé la bonne solution.</p>
+            <button id="reessayer" class="mt-6 px-4 py-2 bg-blue-600 text-white rounded-xl">
+              Réessayer
+            </button>
+          </div>
+        </div>`;
+      document.getElementById('reessayer').addEventListener('click', () => {
+        selection = null;
+        afficherQuestion();
+      });
+    }
+
+    afficherQuestion();
+  </script>
+</body>
+</html>
